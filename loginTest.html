@@ -156,6 +156,13 @@
 		// 鼠标坐标偏移量
 		var mouseOffsetX=0;
 		var mouseOffsetY=0;
+		// 浏览器窗口的宽和高
+		var localClientWidth=document.documentElement.clientWidth;
+		var localClientHeight=document.documentElement.clientHeight;
+		//获取弹窗和遮罩元素
+		var dialog=document.getElementById("dialog");
+	    var mask=document.getElementById("mask");
+
 		// 鼠标事件一：登录窗口标题栏上的鼠标按下事件
 		// 1、在标题栏按下
 		// 2、计算鼠标相对于登录窗口的左上角的位置
@@ -185,9 +192,6 @@
 			// 计算出的窗口位置
 			var dialogLeft=0;
 			var dialogTop=0;
-			// 浏览器窗口的宽和高
-			var localClientWidth=document.documentElement.clientWidth;
-			var localClientHeight=document.documentElement.clientHeight;
 			// 求出登录窗口可移动的最远坐标
 			var maxLeft=0;
 			var maxTop=0;
@@ -232,23 +236,36 @@
 	         	y:ev.clientY + document.body.scrollTop - document.body.clientTop
 	       	};
 	    }
+
 	    // 点击登录，弹出登录窗口 
 	    function showDialog(){
 	    	document.getElementById("dialog").style.display="block";
 	    	document.getElementById("mask").style.display="block";
-	    	// autoCenter();//登录窗口自动居中
-	    	// fullFill();//遮罩层自动充满浏览器窗口
+	    	autoCenter();//登录窗口自动居中
+	    	fullFill();//遮罩层自动充满浏览器窗口
 	    }
 	    // 点击关闭按钮，关闭登录窗口 
 	    function hideDialog(){
-	    	document.getElementById("dialog").style.display="none";
-	    	document.getElementById("mask").style.display="none";
+	    	dialog.style.display="none";
+	    	mask.style.display="none";
 
 	    }
 	    // // 登录窗口自动居中函数
-	    // function autoCenter(){
-	    	
-	    // }
+	    function autoCenter(){
+	    	dialog.style.left=(localClientWidth-dialog.offsetWidth)/2+"px";
+	    	dialog.style.top=(localClientHeight-dialog.offsetHeight)/2+"px";
+	    }
+	    //遮罩层自动充满浏览器窗口
+	    function fullFill(){
+	    	mask.style.width=localClientWidth+"px";
+	    	mask.style.height=localClientHeight+"px";
+	    }
+	    window.onresize=function(){
+	    	localClientWidth=document.documentElement.clientWidth;
+			localClientHeight=document.documentElement.clientHeight;
+	    	autoCenter();//登录窗口自动居中
+	    	fullFill();//遮罩层自动充满浏览器窗口
+	    }
 	</script>
 </body>
 </html>
