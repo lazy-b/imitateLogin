@@ -16,7 +16,7 @@
 		/*主体设置结束*/
 		.lazy-dialog{
 			width:380px;
-			display:block;
+			display:none;
 			position:absolute;
 			z-index:9000;
 			top:100px;
@@ -106,7 +106,7 @@
 			top:0;
 			left:0;
 			z-index:8000;
-			display:block;
+			display:none;
 		}
 		/*遮罩层设置结束*/
 		.link{
@@ -116,99 +116,13 @@
 		}
 		/*登录按钮设置结束*/
 	</style>
-	<script>
-		window.onload=function(){
-			// 是否可拖拽
-			var isDraggable=false;
-			// 获得登录窗口
-			var dialogTitle=document.getElementById("dialogTitle");
-			// 鼠标坐标偏移量
-			var mouseOffsetX=0;
-			var mouseOffsetY=0;
-			// 鼠标事件一：登录窗口标题栏上的鼠标按下事件
-			// 1、在标题栏按下
-			// 2、计算鼠标相对于登录窗口的左上角的位置
-			// 3、标记元素为可拖拽状态
-			dialogTitle.onmousedown=function(ev){
-				// 获取鼠标的坐标
-				var mousePos=mousePosition(ev);
-				var mouseX=mousePos.x;
-				var mouseY=mousePos.y;
-				// 获取鼠标相对登录窗口的偏移
-				mouseOffsetX=mouseX-dialog.offsetLeft;
-				mouseOffsetY=mouseY-dialog.offsetTop;
-				// 设置为窗口可拖拽
-				isDraggable=true;
-				// 防止移动过快或者鼠标移出浏览器窗口导致选中文字触发浏览器默认事件，导致事件监听出现bug。此时再次按下鼠标不能移动窗口，释放鼠标时触发浏览器拖动文字搜索事件，且窗口闪现到鼠标位置，窗口一直跟随鼠标，需要再次单击一次才可恢复。
-				return false;
-			};
-			// 鼠标事件二：整个页面的鼠标移动事件（防止鼠标移动过快移出标题栏）
-			// 1、检测元素的可拖拽状态
-			// 2、如果可拖拽则更新窗口位置
-			document.onmousemove=function(ev){
-				// 获取鼠标的当前坐标
-				var mousePos=mousePosition(ev);
-				var currentMouseX=mousePos.x;
-				var currentMouseY=mousePos.y;
-				// console.log(currentMouseX+"---"+currentMouseY);
-				// 计算出的窗口位置
-				var dialogLeft=0;
-				var dialogTop=0;
-				// 浏览器窗口的宽和高
-				var localClientWidth=document.documentElement.clientWidth;
-				var localClientHeight=document.documentElement.clientHeight;
-				// 求出登录窗口可移动的最远坐标
-				var maxLeft=0;
-				var maxTop=0;
-				// 设置登录窗口可移动的最近坐标
-				var minLeft=0;
-				var minTop=0;
-				// 如果窗口可拖拽，则移动窗口
-				if(isDraggable===true){
-					// 计算出的窗口位置
-					dialogLeft=currentMouseX-mouseOffsetX;
-					dialogTop=currentMouseY-mouseOffsetY;
-					// 求出登录窗口可移动的最远坐标
-					maxLeft=localClientWidth-dialog.offsetWidth;
-					maxTop=localClientHeight-dialog.offsetHeight;
-					// 设定窗口能够移动的范围
-					dialogLeft=Math.min(maxLeft,Math.max(dialogLeft,minLeft));
-					dialogTop=Math.min(maxTop,Math.max(dialogTop,minTop));
-					// 移动窗口
-					dialog.style.left=dialogLeft+"px";
-					dialog.style.top=dialogTop+"px";
-				};
-				// 鼠标移出浏览器窗口则设置不可拖拽，防止在浏览器外面释放鼠标再点击窗口出现bug
-				// if(currentMouseX<=0||currentMouseX>=localClientWidth||currentMouseY<=0||currentMouseY>=localClientHeight){
-				// 	// document.onmouseup();
-				// 	return false;
-				// }
-			};
-			// 鼠标事件三：整个页面的鼠标释放事件
-			// 1、在页面任意位置释放
-			// 1、标记元素为不可拖拽状态
-			document.onmouseup=function(){
-				isDraggable=false;
-			}
-			/*获取鼠标相对于文档的位置，当页面滚动时，坐标值会发生变化*/
-		    function mousePosition(ev){
-		    	var ev=ev||window.event;
-		       	if(ev.pageX || ev.pageY){
-		         	return {x:ev.pageX, y:ev.pageY};
-		       	}
-		       	return {
-		         	x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
-		         	y:ev.clientY + document.body.scrollTop - document.body.clientTop
-		       	};
-		    }
-		}
-	</script>
+
 </head>
 <body>
 	<div id="dialog" class="lazy-dialog" >
 		<div id="dialogTitle" class="lazy-dialog-title">
 			登录窗口	
-			<a href="javascript:;" class="lazy-dialog-title-closebutton"></a>
+			<a href="javascript:;" class="lazy-dialog-title-closebutton" onclick="hideDialog()"></a>
 		</div>
 		<!-- 登录窗口标题栏结束 -->
 		<div id="dialogContent" class="lazy-dialog-content">
@@ -232,7 +146,109 @@
 	<div class="lazy-mask" id="mask" onselectstart="return false"></div>
 	<!-- 遮罩层结束 -->
 	<div class="link">
-		<a href="javascript:;">登录</a>
+		<a href="javascript:;" onclick="showDialog()">登录</a>
 	</div>
+		<script>
+		// 是否可拖拽
+		var isDraggable=false;
+		// 获得登录窗口
+		var dialogTitle=document.getElementById("dialogTitle");
+		// 鼠标坐标偏移量
+		var mouseOffsetX=0;
+		var mouseOffsetY=0;
+		// 鼠标事件一：登录窗口标题栏上的鼠标按下事件
+		// 1、在标题栏按下
+		// 2、计算鼠标相对于登录窗口的左上角的位置
+		// 3、标记元素为可拖拽状态
+		dialogTitle.onmousedown=function(ev){
+			// 获取鼠标的坐标
+			var mousePos=mousePosition(ev);
+			var mouseX=mousePos.x;
+			var mouseY=mousePos.y;
+			// 获取鼠标相对登录窗口的偏移
+			mouseOffsetX=mouseX-dialog.offsetLeft;
+			mouseOffsetY=mouseY-dialog.offsetTop;
+			// 设置为窗口可拖拽
+			isDraggable=true;
+			// 防止移动过快或者鼠标移出浏览器窗口导致选中文字触发浏览器默认事件，导致事件监听出现bug。此时再次按下鼠标不能移动窗口，释放鼠标时触发浏览器拖动文字搜索事件，且窗口闪现到鼠标位置，窗口一直跟随鼠标，需要再次单击一次才可恢复。
+			return false;
+		};
+		// 鼠标事件二：整个页面的鼠标移动事件（防止鼠标移动过快移出标题栏）
+		// 1、检测元素的可拖拽状态
+		// 2、如果可拖拽则更新窗口位置
+		document.onmousemove=function(ev){
+			// 获取鼠标的当前坐标
+			var mousePos=mousePosition(ev);
+			var currentMouseX=mousePos.x;
+			var currentMouseY=mousePos.y;
+			// console.log(currentMouseX+"---"+currentMouseY);
+			// 计算出的窗口位置
+			var dialogLeft=0;
+			var dialogTop=0;
+			// 浏览器窗口的宽和高
+			var localClientWidth=document.documentElement.clientWidth;
+			var localClientHeight=document.documentElement.clientHeight;
+			// 求出登录窗口可移动的最远坐标
+			var maxLeft=0;
+			var maxTop=0;
+			// 设置登录窗口可移动的最近坐标
+			var minLeft=0;
+			var minTop=0;
+			// 如果窗口可拖拽，则移动窗口
+			if(isDraggable===true){
+				// 计算出的窗口位置
+				dialogLeft=currentMouseX-mouseOffsetX;
+				dialogTop=currentMouseY-mouseOffsetY;
+				// 求出登录窗口可移动的最远坐标
+				maxLeft=localClientWidth-dialog.offsetWidth;
+				maxTop=localClientHeight-dialog.offsetHeight;
+				// 设定窗口能够移动的范围
+				dialogLeft=Math.min(maxLeft,Math.max(dialogLeft,minLeft));
+				dialogTop=Math.min(maxTop,Math.max(dialogTop,minTop));
+				// 移动窗口
+				dialog.style.left=dialogLeft+"px";
+				dialog.style.top=dialogTop+"px";
+			};
+			// 鼠标移出浏览器窗口则设置不可拖拽，防止在浏览器外面释放鼠标再点击窗口出现bug
+			// if(currentMouseX<=0||currentMouseX>=localClientWidth||currentMouseY<=0||currentMouseY>=localClientHeight){
+			// 	// document.onmouseup();
+			// 	return false;
+			// }
+		};
+		// 鼠标事件三：整个页面的鼠标释放事件
+		// 1、在页面任意位置释放
+		// 1、标记元素为不可拖拽状态
+		document.onmouseup=function(){
+			isDraggable=false;
+		}
+		/*获取鼠标相对于文档的位置，当页面滚动时，坐标值会发生变化*/
+	    function mousePosition(ev){
+	    	var ev=ev||window.event;
+	       	if(ev.pageX || ev.pageY){
+	         	return {x:ev.pageX, y:ev.pageY};
+	       	}
+	       	return {
+	         	x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
+	         	y:ev.clientY + document.body.scrollTop - document.body.clientTop
+	       	};
+	    }
+	    // 点击登录，弹出登录窗口 
+	    function showDialog(){
+	    	document.getElementById("dialog").style.display="block";
+	    	document.getElementById("mask").style.display="block";
+	    	// autoCenter();//登录窗口自动居中
+	    	// fullFill();//遮罩层自动充满浏览器窗口
+	    }
+	    // 点击关闭按钮，关闭登录窗口 
+	    function hideDialog(){
+	    	document.getElementById("dialog").style.display="none";
+	    	document.getElementById("mask").style.display="none";
+
+	    }
+	    // // 登录窗口自动居中函数
+	    // function autoCenter(){
+	    	
+	    // }
+	</script>
 </body>
 </html>
